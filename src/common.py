@@ -41,6 +41,22 @@ def supports_bf16() -> bool:
     return torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
 
 
+def load_causal_lm(model_id, quant, dtype):
+    """Carrega o modelo na precisão pedida, em qualquer versão do transformers.
+
+    Versões novas ignoram `torch_dtype` (o nome agora é `dtype`) e carregam no formato
+    original (bf16), o que quebra o treino em fp16 na T4.
+    """
+    from transformers import AutoModelForCausalLM
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id, quantization_config=quant, dtype=dtype, device_map={"": 0})
+    except TypeError:  # versões antigas
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id, quantization_config=quant, torch_dtype=dtype, device_map={"": 0})
+    return model
+
+
 def clean_sql(text: str) -> str:
     """Remove cercas de markdown e texto extra, mantendo só a primeira consulta."""
     text = text.strip()

@@ -9,9 +9,10 @@ import json
 
 import torch
 from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoTokenizer, BitsAndBytesConfig
 
-from common import MODEL_ID, ROOT, build_messages, clean_sql, normalize_rows, run_sql, supports_bf16
+from common import (MODEL_ID, ROOT, build_messages, clean_sql, load_causal_lm,
+                    normalize_rows, run_sql, supports_bf16)
 
 
 def load_jsonl(path):
@@ -29,9 +30,7 @@ def load_model(model_id, adapter=None, use_4bit=True):
                            bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=dtype)
         if use_4bit else None
     )
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id, quantization_config=quant, torch_dtype=dtype, device_map={"": 0}
-    )
+    model = load_causal_lm(model_id, quant, dtype)
     if adapter:
         model = PeftModel.from_pretrained(model, adapter)
     model.eval()

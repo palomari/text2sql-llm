@@ -16,7 +16,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl import SFTConfig, SFTTrainer
 
-from common import MODEL_ID, ROOT, build_messages, supports_bf16
+from common import MODEL_ID, ROOT, build_messages, load_causal_lm, supports_bf16
 
 
 def load_jsonl(path):
@@ -68,12 +68,7 @@ def main():
             bnb_4bit_use_double_quant=True,
             bnb_4bit_compute_dtype=torch.bfloat16 if use_bf16 else torch.float16,
         )
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model,
-        quantization_config=quant,
-        torch_dtype=torch.bfloat16 if use_bf16 else torch.float16,
-        device_map={"": 0},
-    )
+    model = load_causal_lm(args.model, quant, torch.bfloat16 if use_bf16 else torch.float16)
 
     lora = LoraConfig(
         r=args.r,
@@ -129,6 +124,16 @@ def main():
         peft_config=lora,
         processing_class=tokenizer,
     )
+
+    # O treino em fp16 (GradScaler) exige que os parâmetros treináveis estejam em fp32.
+    if not use_bf16:
+        n = 0
+        for p in trainer.model.parameters():
+            if p.requires_grad and p.dtype != torch.float32:
+                p.data = p.data.float()
+                n += 1
+        print(f"Parâmetros treináveis convertidos para fp32: {n}")
+    print("Dtypes treináveis:", {str(p.dtype) for p in trainer.model.parameters() if p.requires_grad})
 
     torch.cuda.reset_peak_memory_stats()
     t0 = time.time()
