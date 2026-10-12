@@ -1,0 +1,125 @@
+{"question": "Preciso saber: Quais clientes moram em Caxias do Sul?", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Me ajude: Me diga o número de clientes.", "sql": "SELECT COUNT(*) FROM clientes"}
+{"question": "Por favor, Qual o faturamento por categoria de produto?", "sql": "SELECT pr.categoria, SUM(i.quantidade * i.preco_unitario) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.categoria"}
+{"question": "Me ajude: Quantos pedidos existem por status?", "sql": "SELECT status, COUNT(*) FROM pedidos GROUP BY status"}
+{"question": "Preciso saber: Qual a quantidade total vendida de Smartphone", "sql": "SELECT SUM(i.quantidade) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id WHERE pr.nome = 'Smartphone'"}
+{"question": "Gostaria de saber: Mostre os 2 produtos de maior valor.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Quantos clientes moram em PR?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Quantos clientes são do estado PR?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Preciso saber: Qual o total de pedidos de clientes do estado RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "preciso saber: qual o total de clientes cadastrados?", "sql": "SELECT COUNT(*) FROM clientes"}
+{"question": "Preciso saber: Mostre os 2 produtos de maior valor", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Me ajude: Qual a quantidade total vendida de Smartphone?", "sql": "SELECT SUM(i.quantidade) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id WHERE pr.nome = 'Smartphone'"}
+{"question": "liste os produtos com estoque abaixo de 50.", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Pode me dizer? Mostre os 2 produtos de maior valor", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Consulta: Liste os 3 clientes com maior valor total em pedidos.", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "Quais os 10 produtos mais baratos?", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Consulta: Quais produtos têm menos de 50 unidades em estoque?", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Pode me dizer? Liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "qual o número de clientes de pr?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Preciso saber: Mostre o nome de todos os clientes da cidade de Caxias do Sul.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Qual o número de pedidos de maio/2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-05'"}
+{"question": "Pode me dizer? Quantos pedidos foram feitos por clientes de RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "Por favor, Quantos pedidos foram feitos por clientes de RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "Consulta: Quantos pedidos existem por status?", "sql": "SELECT status, COUNT(*) FROM pedidos GROUP BY status"}
+{"question": "Preciso saber: Conte os produtos agrupados por categoria.", "sql": "SELECT categoria, COUNT(*) FROM produtos GROUP BY categoria"}
+{"question": "quais os 2 produtos mais caros?", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Consulta: Quantos clientes existem por estado", "sql": "SELECT estado, COUNT(*) FROM clientes GROUP BY estado"}
+{"question": "por favor, quais clientes de rj fizeram pedidos cancelados?", "sql": "SELECT DISTINCT c.nome FROM clientes c JOIN pedidos p ON p.cliente_id = c.id WHERE c.estado = 'RJ' AND p.status = 'cancelado'"}
+{"question": "Liste os 2 produtos com maior preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Por favor, Quais produtos custam mais de 300 reais?", "sql": "SELECT nome, preco FROM produtos WHERE preco > 300"}
+{"question": "pode me dizer? quantos pedidos foram feitos em maio de 2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-05'"}
+{"question": "Me ajude: Qual o faturamento por categoria de produto?", "sql": "SELECT pr.categoria, SUM(i.quantidade * i.preco_unitario) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.categoria"}
+{"question": "some o valor de todos os pedidos entregues.", "sql": "SELECT SUM(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "Quais produtos têm menos de 50 unidades em estoque?", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Por favor, Mostre o nome de todos os clientes da cidade de Caxias do Sul.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Qual o total de pedidos de clientes do estado RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "quais os 4 produtos mais vendidos em quantidade?", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "preciso saber: liste os produtos com estoque abaixo de 50.", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Pode me dizer? Liste os produtos com preço acima de 300.", "sql": "SELECT nome, preco FROM produtos WHERE preco > 300"}
+{"question": "Preciso saber: Liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Consulta: Quantos pedidos cada estado fez?", "sql": "SELECT c.estado, COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id GROUP BY c.estado"}
+{"question": "Gostaria de saber: Liste os nomes dos clientes de Pelotas.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Pelotas'"}
+{"question": "Preciso saber: Qual o ticket médio dos pedidos entregues?", "sql": "SELECT AVG(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "Preciso saber: Quais os 3 clientes que mais gastaram?", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "quantos clientes são do estado pr?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Liste os clientes de RJ com algum pedido cancelado.", "sql": "SELECT DISTINCT c.nome FROM clientes c JOIN pedidos p ON p.cliente_id = c.id WHERE c.estado = 'RJ' AND p.status = 'cancelado'"}
+{"question": "por favor, liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Preciso saber: Qual o número de clientes de PR?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Liste os 3 clientes com maior valor total em pedidos.", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "Quanto foi vendido em pedidos entregues", "sql": "SELECT SUM(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "Me ajude: Qual o total de pedidos de clientes do estado RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "Pode me dizer? Quais os 3 clientes que mais gastaram?", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "consulta: mostre os produtos que custam mais que r$ 300.", "sql": "SELECT nome, preco FROM produtos WHERE preco > 300"}
+{"question": "Por favor, Quais produtos têm menos de 50 unidades em estoque?", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Consulta: Quais os 10 produtos mais baratos", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Gostaria de saber: Quantos produtos existem por categoria?", "sql": "SELECT categoria, COUNT(*) FROM produtos GROUP BY categoria"}
+{"question": "liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Me ajude: Quantas unidades de Ficção científica foram vendidas?", "sql": "SELECT SUM(i.quantidade) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id WHERE pr.nome = 'Ficção científica'"}
+{"question": "Gostaria de saber: Quais os 3 clientes que mais gastaram?", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "Me ajude: Qual o número de pedidos de maio/2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-05'"}
+{"question": "Liste os 4 produtos que mais saíram", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "preciso saber: liste os clientes de rj com algum pedido cancelado.", "sql": "SELECT DISTINCT c.nome FROM clientes c JOIN pedidos p ON p.cliente_id = c.id WHERE c.estado = 'RJ' AND p.status = 'cancelado'"}
+{"question": "Preciso saber: Quantos clientes são do estado PR?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Quantos pedidos foram feitos em dezembro de 2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-12'"}
+{"question": "Me ajude: Liste os clientes sem nenhum pedido", "sql": "SELECT nome FROM clientes WHERE id NOT IN (SELECT cliente_id FROM pedidos)"}
+{"question": "Por favor, Liste os produtos com preço acima de 300", "sql": "SELECT nome, preco FROM produtos WHERE preco > 300"}
+{"question": "Pode me dizer? Qual o valor do pedido mais caro?", "sql": "SELECT MAX(valor_total) FROM pedidos"}
+{"question": "pode me dizer? qual o número de pedidos de novembro/2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-11'"}
+{"question": "Preciso saber: Qual o valor médio dos pedidos entregues", "sql": "SELECT AVG(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "Pode me dizer? Quais os 4 produtos mais vendidos em quantidade?", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "Consulta: Qual o maior pedido já feito?", "sql": "SELECT MAX(valor_total) FROM pedidos"}
+{"question": "Mostre a média de preço de cada categoria de produto", "sql": "SELECT categoria, AVG(preco) FROM produtos GROUP BY categoria"}
+{"question": "Pode me dizer? Quais produtos têm menos de 50 unidades em estoque?", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Pode me dizer? Qual o valor do pedido mais caro", "sql": "SELECT MAX(valor_total) FROM pedidos"}
+{"question": "preciso saber: quanto foi vendido em pedidos entregues?", "sql": "SELECT SUM(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "Por favor, Liste os 4 produtos que mais saíram.", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "Gostaria de saber: Liste os 3 clientes com maior valor total em pedidos.", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "me ajude: liste os nomes dos clientes de caxias do sul.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Me ajude: Quais os 3 clientes que mais gastaram?", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "Me ajude: Qual o total de pedidos?", "sql": "SELECT COUNT(*) FROM pedidos"}
+{"question": "pode me dizer? liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "gostaria de saber: quantos clientes existem?", "sql": "SELECT COUNT(*) FROM clientes"}
+{"question": "Preciso saber: Mostre a média de preço de cada categoria de produto.", "sql": "SELECT categoria, AVG(preco) FROM produtos GROUP BY categoria"}
+{"question": "Pode me dizer? Liste os 2 produtos com maior preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Gostaria de saber: Liste os produtos com estoque abaixo de 50", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "pode me dizer? quantos clientes existem por estado?", "sql": "SELECT estado, COUNT(*) FROM clientes GROUP BY estado"}
+{"question": "Consulta: Liste os clientes sem nenhum pedido.", "sql": "SELECT nome FROM clientes WHERE id NOT IN (SELECT cliente_id FROM pedidos)"}
+{"question": "Por favor, Liste os 2 produtos com maior preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Liste os 10 produtos com menor preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Gostaria de saber: Quais os 4 produtos mais vendidos em quantidade?", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "me ajude: liste os 3 clientes com maior valor total em pedidos.", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "liste os nomes dos clientes de pelotas.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Pelotas'"}
+{"question": "Pode me dizer? Liste os 4 produtos que mais saíram.", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "por favor, mostre o nome de todos os clientes da cidade de pelotas.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Pelotas'"}
+{"question": "Qual o total de pedidos?", "sql": "SELECT COUNT(*) FROM pedidos"}
+{"question": "preciso saber: liste os 2 produtos com maior preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Qual o total de pedidos", "sql": "SELECT COUNT(*) FROM pedidos"}
+{"question": "Por favor, Liste os 3 clientes com maior valor total em pedidos.", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "por favor, quais produtos têm menos de 50 unidades em estoque?", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "consulta: quais os 10 produtos mais baratos?", "sql": "SELECT nome, preco FROM produtos ORDER BY preco ASC LIMIT 10"}
+{"question": "Por favor, Quantos produtos existem por categoria?", "sql": "SELECT categoria, COUNT(*) FROM produtos GROUP BY categoria"}
+{"question": "Gostaria de saber: Qual o número de pedidos de maio/2023?", "sql": "SELECT COUNT(*) FROM pedidos WHERE strftime('%Y-%m', data_pedido) = '2023-05'"}
+{"question": "Gostaria de saber: Quantos pedidos cada estado fez?", "sql": "SELECT c.estado, COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id GROUP BY c.estado"}
+{"question": "Me ajude: Quantos clientes moram em PR?", "sql": "SELECT COUNT(*) FROM clientes WHERE estado = 'PR'"}
+{"question": "Gostaria de saber: Qual o total de pedidos de clientes do estado RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "Me ajude: Quantos pedidos foram feitos por clientes de RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "Gostaria de saber: Liste os clientes sem nenhum pedido.", "sql": "SELECT nome FROM clientes WHERE id NOT IN (SELECT cliente_id FROM pedidos)"}
+{"question": "Quais os 4 produtos mais vendidos em quantidade?", "sql": "SELECT pr.nome, SUM(i.quantidade) AS total FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.id ORDER BY total DESC LIMIT 4"}
+{"question": "por favor, quais os 3 clientes que mais gastaram?", "sql": "SELECT c.nome, SUM(p.valor_total) AS total FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.id ORDER BY total DESC LIMIT 3"}
+{"question": "pode me dizer? some o valor vendido em cada categoria.", "sql": "SELECT pr.categoria, SUM(i.quantidade * i.preco_unitario) FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id GROUP BY pr.categoria"}
+{"question": "gostaria de saber: liste os 2 produtos com maior preço.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "consulta: some o valor de todos os pedidos entregues.", "sql": "SELECT SUM(valor_total) FROM pedidos WHERE status = 'entregue'"}
+{"question": "pode me dizer? quais clientes de rj fizeram pedidos cancelados?", "sql": "SELECT DISTINCT c.nome FROM clientes c JOIN pedidos p ON p.cliente_id = c.id WHERE c.estado = 'RJ' AND p.status = 'cancelado'"}
+{"question": "me ajude: liste os produtos com estoque abaixo de 50.", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Por favor, Quais clientes moram em Caxias do Sul?", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Quais produtos têm menos de 50 unidades em estoque", "sql": "SELECT nome, estoque FROM produtos WHERE estoque < 50"}
+{"question": "Me ajude: Liste os nomes dos clientes de Caxias do Sul.", "sql": "SELECT nome FROM clientes WHERE cidade = 'Caxias do Sul'"}
+{"question": "Preciso saber: Conte os pedidos agrupados por status.", "sql": "SELECT status, COUNT(*) FROM pedidos GROUP BY status"}
+{"question": "Gostaria de saber: Quais clientes moram em Pelotas?", "sql": "SELECT nome FROM clientes WHERE cidade = 'Pelotas'"}
+{"question": "Mostre o número de clientes em cada estado.", "sql": "SELECT estado, COUNT(*) FROM clientes GROUP BY estado"}
+{"question": "Quais os 2 produtos mais caros?", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
+{"question": "Por favor, Qual o total de pedidos de clientes do estado RJ?", "sql": "SELECT COUNT(*) FROM pedidos p JOIN clientes c ON c.id = p.cliente_id WHERE c.estado = 'RJ'"}
+{"question": "por favor, quais produtos custam mais de 300 reais?", "sql": "SELECT nome, preco FROM produtos WHERE preco > 300"}
+{"question": "Quantos clientes existem?", "sql": "SELECT COUNT(*) FROM clientes"}
+{"question": "Pode me dizer? Mostre os 2 produtos de maior valor.", "sql": "SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 2"}
