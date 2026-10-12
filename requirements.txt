@@ -1,10 +1,11 @@
-torch
-transformers>=4.46
-datasets
-peft>=0.13
-trl>=0.12
-accelerate
-bitsandbytes
+# Versões testadas no Google Colab (GPU Tesla T4, Python 3.13, torch 2.11.0+cu130).
+# O torch já vem instalado no Colab; fora dele, instale o torch com CUDA pelo site pytorch.org.
+transformers==5.18.0
+trl==1.15.0
+peft==0.21.1
+accelerate==1.15.0
+bitsandbytes==0.50.2
+datasets==4.8.5
 gradio>=4.0
 pandas
 matplotlib
