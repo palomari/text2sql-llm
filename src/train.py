@@ -5,6 +5,7 @@ Exemplo:
 """
 import argparse
 import csv
+import dataclasses
 import json
 import time
 from pathlib import Path
@@ -84,7 +85,11 @@ def main():
     val_ds = to_text(tokenizer, load_jsonl(ROOT / "data" / "val.jsonl"))
 
     out = Path(args.out_dir) / args.name
-    cfg = SFTConfig(
+
+    # warmup em passos (em vez de warmup_ratio, que foi removido nas versões novas)
+    steps_per_epoch = max(1, len(train_ds) // (args.batch * args.grad_accum))
+    total_steps = max(1, int(steps_per_epoch * args.epochs))
+    cfg_kwargs = dict(
         output_dir=str(out),
         num_train_epochs=args.epochs,
         per_device_train_batch_size=args.batch,
@@ -92,18 +97,27 @@ def main():
         gradient_accumulation_steps=args.grad_accum,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.05,
+        warmup_steps=max(1, int(0.05 * total_steps)),
         logging_steps=10,
         eval_strategy="epoch",
         save_strategy="no",
         bf16=use_bf16,
         fp16=not use_bf16,
         gradient_checkpointing=True,
-        max_length=args.max_len,  # em versões antigas do trl o nome é max_seq_length
+        max_length=args.max_len,
         dataset_text_field="text",
         report_to="none",
         seed=42,
     )
+    # Compatibilidade entre versões do trl/transformers: renomeia/descarta argumentos
+    # que a versão instalada não conhece (e avisa, para não ficar silencioso).
+    valid = {f.name for f in dataclasses.fields(SFTConfig)}
+    if "max_length" not in valid and "max_seq_length" in valid:
+        cfg_kwargs["max_seq_length"] = cfg_kwargs.pop("max_length")
+    dropped = [k for k in cfg_kwargs if k not in valid]
+    if dropped:
+        print(f"AVISO: argumentos ignorados nesta versão do trl: {dropped}")
+    cfg = SFTConfig(**{k: v for k, v in cfg_kwargs.items() if k in valid})
 
     trainer = SFTTrainer(
         model=model,
