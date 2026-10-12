@@ -11,7 +11,7 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from common import MODEL_ID, ROOT, build_messages, clean_sql, normalize_rows, run_sql
+from common import MODEL_ID, ROOT, build_messages, clean_sql, normalize_rows, run_sql, supports_bf16
 
 
 def load_jsonl(path):
@@ -23,7 +23,7 @@ def load_model(model_id, adapter=None, use_4bit=True):
     tok = AutoTokenizer.from_pretrained(model_id, padding_side="left")
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+    dtype = torch.bfloat16 if supports_bf16() else torch.float16
     quant = (
         BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                            bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=dtype)

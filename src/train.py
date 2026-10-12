@@ -16,7 +16,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl import SFTConfig, SFTTrainer
 
-from common import MODEL_ID, ROOT, build_messages
+from common import MODEL_ID, ROOT, build_messages, supports_bf16
 
 
 def load_jsonl(path):
@@ -52,7 +52,9 @@ def main():
 
     assert torch.cuda.is_available(), "GPU não encontrada! Verifique o driver/CUDA."
     print("GPU:", torch.cuda.get_device_name(0))
-    use_bf16 = torch.cuda.is_bf16_supported()
+    use_bf16 = supports_bf16()
+    print("Precisão:", "bf16" if use_bf16 else "fp16", "| compute capability:",
+          torch.cuda.get_device_capability(0))
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     if tokenizer.pad_token is None:

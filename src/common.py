@@ -31,6 +31,16 @@ def build_messages(question: str, answer: str | None = None):
     return msgs
 
 
+def supports_bf16() -> bool:
+    """bf16 nativo só existe em GPUs com compute capability >= 8.0 (A100, RTX 30xx+).
+
+    Não usar torch.cuda.is_bf16_supported(): em versões novas do PyTorch ele devolve True
+    na T4 (capability 7.5) por causa de emulação, e o treino quebra.
+    """
+    import torch
+    return torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
+
+
 def clean_sql(text: str) -> str:
     """Remove cercas de markdown e texto extra, mantendo só a primeira consulta."""
     text = text.strip()
