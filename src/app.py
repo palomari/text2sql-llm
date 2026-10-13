@@ -24,7 +24,7 @@ from common import MODEL_ID, SCHEMA, clean_sql, run_sql
 TITULO = "Text-to-SQL em português"
 ICONE_ENVIAR = "→"
 ICONE_AGUARDE = "⏳"
-LIMITE_LINHAS = 200  # mesmo limite usado em run_sql
+LIMITE_LINHAS = 200
 
 SUGESTOES = [
     ("user", "Quantos clientes são do estado SP?"),
@@ -34,7 +34,6 @@ SUGESTOES = [
     ("list", "Quantos pedidos existem por status?"),
 ]
 
-# Ícones de traço (estilo Lucide), desenhados em 24x24.
 ICONES = {
     "database": '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
@@ -102,7 +101,7 @@ JS_CARGA = """
         setTimeout(() => alvo.classList.remove('ok'), 1200);
       }).catch(() => {});
     } else if (alvo.dataset.acao === 'topo') {
-      window.scrollTo({top: 0, behavior: 'smooth'});
+      window.location.reload();
     }
   });
 }
@@ -114,7 +113,6 @@ JS_ROLAR = """
   if (msgs.length) msgs[msgs.length - 1].scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 """
-
 
 SQL_KEYWORDS = {
     "SELECT", "FROM", "WHERE", "GROUP", "BY", "ORDER", "HAVING", "LIMIT", "OFFSET", "JOIN", "LEFT",
@@ -282,9 +280,10 @@ def html_resposta(sql, resultado=None, erro=None, esquema_aberto=True):
             aviso = f" (mostrando só as primeiras {LIMITE_LINHAS})" if n >= LIMITE_LINHAS else ""
             corpo = f'<div class="tabela">{tabela}</div>' + status(f"{n} linha(s) retornada(s){aviso}.")
     
-    # ORDEM INVERTIDA: 1º Resultado da consulta, 2º SQL gerada, 3º Esquema do banco
+    # Ordem com espaçamento explícito entre o Resultado e a SQL gerada
     return html_bot(
         secao("table", "Resultado da consulta", corpo)
+        + '<div style="margin-top: 18px;"></div>'
         + titulo("code", "SQL gerada")
         + caixa_codigo(exibicao, "night", numerar=True)
         + secao("database", "Esquema do banco", caixa_codigo(formatar_esquema(SCHEMA), "day"),
@@ -509,7 +508,7 @@ body.dark .theme-toggle .i-moon {
     gap: 14px !important;
     max-width: 900px;
     width: calc(100% - 40px);
-    margin: 0 auto 54px !important;
+    margin: 0 auto 30px !important;
     border: none !important;
     background: transparent !important;
 }
@@ -555,6 +554,28 @@ body.dark .theme-toggle .i-moon {
     mask-size: contain;
 }
 
+/* ---------- parâmetros de geração (abrindo para cima) ---------- */
+#params {
+    max-width: 720px;
+    width: calc(100% - 40px);
+    margin: 0 auto 12px !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+}
+
+/* Força o painel colapsável a expandir para cima */
+#params details {
+    display: flex;
+    flex-direction: column-reverse;
+}
+#params details > summary {
+    order: 2;
+}
+#params details > .c, #params details > div:not(summary) {
+    order: 1;
+}
+
 /* ---------- barra de pergunta ---------- */
 #question-bar {
     display: flex !important;
@@ -563,7 +584,7 @@ body.dark .theme-toggle .i-moon {
     gap: 12px !important;
     max-width: 720px;
     width: calc(100% - 40px);
-    margin: 0 auto 18px !important;
+    margin: 0 auto 28px !important;
     padding: 10px 12px 10px 16px !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
@@ -631,15 +652,6 @@ body.dark .theme-toggle .i-moon {
 
 #send-btn:hover {
     filter: brightness(.96);
-}
-
-#params {
-    max-width: 720px;
-    width: calc(100% - 40px);
-    margin: 0 auto 14px !important;
-    background: var(--surface) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 16px !important;
 }
 
 /* ---------- conversa ---------- */
@@ -843,12 +855,12 @@ details[open] > summary.title {
 .cb-night .s-num { color: #7fd6ff; }
 .cb-night .s-com { color: #7c819f; }
 
-/* CORES CORRIGIDAS PARA O TEMA CLARO */
-.cb-day .s-kw { color: #3b28cc !important; font-weight: 600; }
-.cb-day .s-fn { color: #6230b8 !important; }
-.cb-day .s-str { color: #9c3c0a !important; }
-.cb-day .s-num { color: #006699 !important; }
-.cb-day .s-com { color: #5f638f !important; }
+/* CORES FORTES PARA O TEMA CLARO (GARANTE VISIBILIDADE TOTAL) */
+.cb-day .s-kw { color: #2311b5 !important; font-weight: 700; }
+.cb-day .s-fn { color: #551a8b !important; font-weight: 600; }
+.cb-day .s-str { color: #b33600 !important; font-weight: 600; }
+.cb-day .s-num { color: #0056b3 !important; font-weight: 600; }
+.cb-day .s-com { color: #4e537d !important; }
 
 body.dark .cb-day .s-kw { color: #a99dff; }
 body.dark .cb-day .s-fn { color: #c9a8ff; }
@@ -1047,7 +1059,7 @@ def construir_interface(gerar):
 
         historico = gr.HTML(value="", elem_id="chat-history")
 
-        # PARÂMETROS ACIMA DA BARRA DE PESQUISA (ABRINDO PARA CIMA)
+        # Ordem invertida: parâmetros logo acima da barra para abrirem para cima
         with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
             temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
                                     label="Temperature (0 = determinístico)")
