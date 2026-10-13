@@ -1,4 +1,3 @@
-
 """
 Frontend Gradio — Text-to-SQL em português.
 
@@ -40,8 +39,11 @@ CSS = """
 
 .gradio-container {
     font-family: 'Inter', sans-serif !important;
-    max-width: 1440px !important;
-    margin: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background:
         radial-gradient(ellipse at 50% 0%, #ffffff 0%, transparent 60%),
         linear-gradient(135deg, #f5f4ff, #e9eaff) !important;
@@ -56,8 +58,12 @@ CSS = """
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 22px;
-    margin-bottom: 10px;
+    padding: 18px 32px;
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    margin-bottom: 20px;
 }
 
 .brand {
@@ -65,7 +71,7 @@ CSS = """
     align-items: center;
     gap: 13px;
     color: var(--text);
-    font-size: 19px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -81,8 +87,33 @@ CSS = """
     font-size: 23px;
 }
 
+#settings-btn {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 50% !important;
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    color: var(--primary) !important;
+    font-size: 18px !important;
+    box-shadow: 0 4px 12px rgba(98, 84, 237, 0.1) !important;
+}
+
+#settings-menu {
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(82, 73, 180, 0.12);
+}
+
 #landing {
-    padding: 24px 12px 30px;
+    padding: 24px 20px 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .welcome {
@@ -114,7 +145,7 @@ CSS = """
 }
 
 #suggestions {
-    max-width: 1080px;
+    width: 100%;
     margin: 0 auto 48px;
 }
 
@@ -145,7 +176,7 @@ CSS = """
 }
 
 #question-bar {
-    max-width: 650px;
+    max-width: 750px;
     margin: 0 auto;
     padding: 9px 12px;
     border: 1px solid var(--border);
@@ -183,7 +214,7 @@ CSS = """
 }
 
 #answer-panel {
-    max-width: 820px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 14px 16px 18px;
     background: rgba(255,255,255,.76);
@@ -196,7 +227,7 @@ CSS = """
     display: flex;
     justify-content: flex-end;
     margin: 0 auto 18px;
-    max-width: 820px;
+    max-width: 900px;
 }
 
 .question-bubble-inner {
@@ -254,31 +285,17 @@ CSS = """
 }
 
 footer {
-    text-align: center;
-    color: #8589aa;
-    font-size: 11px;
-    padding: 25px 0 12px;
+    display: none !important;
 }
 
 @media (max-width: 700px) {
+    #app-header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+    }
     #landing {
-        padding: 12px 4px;
-    }
-
-    .welcome {
-        margin-bottom: 25px;
-    }
-
-    #suggestions {
-        margin-bottom: 25px;
-    }
-
-    #answer-panel {
-        padding: 12px 9px;
-    }
-
-    .brand {
-        font-size: 16px;
+        padding: 12px 10px;
     }
 }
 """
@@ -300,7 +317,6 @@ def main():
     )
     args = ap.parse_args()
 
-    # Carrega o modelo uma única vez.
     tok, model = load_model(
         args.model,
         args.adapter,
@@ -312,8 +328,6 @@ def main():
 
         if not pergunta.strip():
             return (
-                gr.update(),
-                gr.update(),
                 gr.update(),
                 gr.update(),
                 gr.update(),
@@ -350,8 +364,6 @@ def main():
                     f"Erro ao executar a SQL: {resultado}",
                     gr.update(visible=False),
                     gr.update(visible=True),
-                    gr.update(visible=False),
-                    gr.update(visible=True),
                 )
 
             cols, rows = resultado
@@ -364,8 +376,6 @@ def main():
                 f"✓ {len(rows)} linha(s) retornada(s).",
                 gr.update(visible=False),
                 gr.update(visible=True),
-                gr.update(visible=False),
-                gr.update(visible=True),
             )
 
         except Exception as exc:
@@ -374,8 +384,6 @@ def main():
                 "",
                 pd.DataFrame(),
                 f"Erro ao gerar ou executar a consulta: {exc}",
-                gr.update(visible=False),
-                gr.update(visible=True),
                 gr.update(visible=False),
                 gr.update(visible=True),
             )
@@ -388,9 +396,10 @@ def main():
             "",
             gr.update(visible=True),
             gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=False),
         )
+
+    def alternar_config(visivel):
+        return gr.update(visible=not visivel)
 
     with gr.Blocks(
         title="Text-to-SQL em português",
@@ -403,24 +412,43 @@ def main():
         css=CSS,
     ) as demo:
 
-        # Cabeçalho
-        gr.HTML("""
-        <header id="app-header">
+        # Cabeçalho com o botão de engrenagem no canto superior direito
+        with gr.Row(elem_id="app-header"):
+            gr.HTML("""
             <div class="brand">
                 <div class="brand-icon">▤</div>
                 <span>Text-to-SQL em português</span>
             </div>
-            <div style="
-                width:40px;height:40px;border-radius:50%;
-                border:1px solid #e9e6ff;background:#fff;
-                display:flex;align-items:center;justify-content:center;
-                color:#6254ed;font-size:20px;">
-                ☼
-            </div>
-        </header>
-        """)
+            """)
+            settings_btn = gr.Button("⚙", elem_id="settings-btn")
 
-        # Tela inicial
+        # Menu/Painel de configurações que abre ao clicar na engrenagem
+        with gr.Column(visible=False, elem_id="settings-menu") as settings_panel:
+            gr.Markdown("### ⚙ Painel de Controle")
+            
+            with gr.Accordion("Parâmetros de geração", open=True):
+                temperature = gr.Slider(
+                    0.0, 1.5, value=0.0, step=0.1,
+                    label="Temperature (0 = determinístico)",
+                )
+                top_p = gr.Slider(
+                    0.1, 1.0, value=0.9, step=0.05,
+                    label="Top-p",
+                )
+                max_tokens = gr.Slider(
+                    32, 400, value=200, step=8,
+                    label="Máximo de tokens",
+                )
+            
+            gr.Markdown("---")
+            gr.Markdown("• **Usar via API** 🚀\n• **Construído com Gradio** 🔶\n• **Configurações gerais**")
+
+        settings_btn.click(
+            fn=alternar_config,
+            inputs=[settings_panel],
+            outputs=[settings_panel],
+        )
+
         landing = gr.Column(visible=True, elem_id="landing")
 
         with landing:
@@ -462,21 +490,6 @@ def main():
                     elem_id="send-btn",
                 )
 
-            with gr.Accordion("⚙ Parâmetros de geração", open=False):
-                temperature = gr.Slider(
-                    0.0, 1.5, value=0.0, step=0.1,
-                    label="Temperature (0 = determinístico)",
-                )
-                top_p = gr.Slider(
-                    0.1, 1.0, value=0.9, step=0.05,
-                    label="Top-p",
-                )
-                max_tokens = gr.Slider(
-                    32, 400, value=200, step=8,
-                    label="Máximo de tokens",
-                )
-
-        # Tela da resposta
         answer = gr.Column(visible=False)
 
         with answer:
@@ -491,8 +504,6 @@ def main():
                     interactive=False,
                 )
 
-                # O esquema aparece junto com a resposta,
-                # em vez de ocupar espaço na tela inicial.
                 with gr.Accordion("▤  Esquema do banco", open=True):
                     gr.Code(
                         value=SCHEMA,
@@ -518,22 +529,11 @@ def main():
                     elem_id="new-question",
                 )
 
-            # Os parâmetros também ficam acessíveis após a resposta.
-            with gr.Accordion("⚙ Parâmetros de geração", open=False):
-                # Os mesmos componentes da tela inicial são reutilizados
-                # no callback; não é necessário duplicá-los aqui.
-                gr.Markdown(
-                    "Os parâmetros podem ser ajustados na tela inicial "
-                    "antes de enviar uma nova pergunta."
-                )
-
         saidas = [
             question_html,
             sql_out,
             tabela,
             status,
-            landing,
-            answer,
             landing,
             answer,
         ]
@@ -563,8 +563,6 @@ def main():
                 sql_out,
                 tabela,
                 status,
-                landing,
-                answer,
                 landing,
                 answer,
             ],
