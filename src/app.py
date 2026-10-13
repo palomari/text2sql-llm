@@ -351,11 +351,12 @@ def main():
                 <span>Text-to-SQL em português</span>
             </div>
             """)
-            with gr.Row(elem_id="", scale=0, custom_css="gap:15px; align-items:center;"):
+            with gr.Row(elem_id="", scale=0):
+                gr.HTML('<div style="display: flex; gap: 15px; align-items: center;">')
                 gr.HTML('<span style="cursor:pointer; color:var(--muted);">Usar via API 🚀</span>')
                 gr.HTML('<span style="color:var(--border);">·</span>')
                 gr.HTML('<span style="cursor:pointer; color:var(--muted);">Construído com Gradio 🔶</span>')
-                gr.HTML('<span style="color:var(--border);">·</span>')
+                gr.HTML('</div>')
                 
         with gr.Accordion("⚙ Parâmetros de Geração & Configurações", open=False):
             with gr.Row():
