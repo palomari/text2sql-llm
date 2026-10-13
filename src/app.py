@@ -100,12 +100,12 @@ CSS = """
 }
 
 #settings-menu {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto 20px auto;
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 16px;
+    padding: 20px;
     box-shadow: 0 10px 30px rgba(82, 73, 180, 0.12);
 }
 
@@ -398,9 +398,6 @@ def main():
             gr.update(visible=False),
         )
 
-    def alternar_config(visivel):
-        return gr.update(visible=not visivel)
-
     with gr.Blocks(
         title="Text-to-SQL em português",
         theme=gr.themes.Soft(
@@ -412,7 +409,10 @@ def main():
         css=CSS,
     ) as demo:
 
-        # Cabeçalho com o botão de engrenagem no canto superior direito
+        # Estado para controlar o painel de configurações (Aberto/Fechado)
+        settings_state = gr.State(value=False)
+
+        # Cabeçalho
         with gr.Row(elem_id="app-header"):
             gr.HTML("""
             <div class="brand">
@@ -422,9 +422,9 @@ def main():
             """)
             settings_btn = gr.Button("⚙", elem_id="settings-btn")
 
-        # Menu/Painel de configurações que abre ao clicar na engrenagem
+        # Painel de configurações dropdown
         with gr.Column(visible=False, elem_id="settings-menu") as settings_panel:
-            gr.Markdown("### ⚙ Painel de Controle")
+            gr.Markdown("### ⚙ Painel de Configurações")
             
             with gr.Accordion("Parâmetros de geração", open=True):
                 temperature = gr.Slider(
@@ -441,12 +441,17 @@ def main():
                 )
             
             gr.Markdown("---")
-            gr.Markdown("• **Usar via API** 🚀\n• **Construído com Gradio** 🔶\n• **Configurações gerais**")
+            gr.Markdown("• **Usar via API** 🚀<br>• **Construído com Gradio** 🔶")
+
+        # Evento do botão de engrenagem usando gr.State para evitar InvalidComponentError
+        def alternar_painel(estado):
+            novo_estado = not estado
+            return novo_estado, gr.update(visible=novo_estado)
 
         settings_btn.click(
-            fn=alternar_config,
-            inputs=[settings_panel],
-            outputs=[settings_panel],
+            fn=alternar_painel,
+            inputs=[settings_state],
+            outputs=[settings_state, settings_panel],
         )
 
         landing = gr.Column(visible=True, elem_id="landing")
