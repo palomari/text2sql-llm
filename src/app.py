@@ -188,7 +188,7 @@ def html_header():
         f"<span>{TITULO}</span></div>"
         '<button type="button" class="theme-toggle" data-acao="tema" '
         'title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro" '
-        f'onclick="{TEMA_ONCLICK}">{svg("sun", 19, "i-sun")}{svg("moon", 19, "i-moon")}</button>'
+        f'onclick="{TEMA_ONCLICK}"><span class="i-sun">{svg("sun", 19)}</span><span class="i-moon">{svg("moon", 19)}</span></button>'
         "</div>"
     )
 
@@ -432,7 +432,7 @@ footer,
     margin: auto;
 }
 
-/* BOTÃO DE TEMA CENTRALIZADO PERFEITAMENTE */
+/* BOTÃO DE TEMA E CORREÇÃO DE EXIBIÇÃO SOL/LUA */
 .theme-toggle {
     width: 42px;
     height: 42px;
@@ -461,11 +461,15 @@ footer,
 }
 
 .theme-toggle .i-moon {
-    display: none;
+    display: none !important;
+}
+
+.theme-toggle .i-sun {
+    display: inline-block !important;
 }
 
 body.dark .theme-toggle .i-sun {
-    display: none;
+    display: none !important;
 }
 
 body.dark .theme-toggle .i-moon {
@@ -556,7 +560,7 @@ body.dark .theme-toggle .i-moon {
     mask-size: contain;
 }
 
-/* ---------- PARÂMETROS ABRINDO PARA CIMA ---------- */
+/* ---------- PARÂMETROS ACIMA DA BARRA DE PESQUISA ---------- */
 #params {
     max-width: 720px;
     width: calc(100% - 40px);
@@ -564,25 +568,6 @@ body.dark .theme-toggle .i-moon {
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 16px !important;
-}
-
-/* Força a expansão do Accordion para cima através de Flexbox invertido */
-#params .block, #params .form {
-    display: flex !important;
-    flex-direction: column-reverse !important;
-}
-
-#params details {
-    display: flex !important;
-    flex-direction: column-reverse !important;
-}
-
-#params details > summary {
-    order: 2 !important;
-}
-
-#params details > div:not(summary) {
-    order: 1 !important;
 }
 
 /* ---------- barra de pergunta ---------- */
@@ -693,7 +678,6 @@ body.dark .theme-toggle .i-moon {
     overflow-wrap: anywhere;
 }
 
-/* ÍCONES DOS AVATARES CENTRALIZADOS */
 .av {
     flex: 0 0 auto;
     display: flex !important;
@@ -831,7 +815,6 @@ details[open] > summary.title {
     padding: 0 !important;
 }
 
-/* BOTÃO DE COPIAR CENTRALIZADO */
 .copy-btn {
     position: absolute;
     top: 10px;
@@ -870,7 +853,6 @@ details[open] > summary.title {
 .cb-night .s-num { color: #7fd6ff; }
 .cb-night .s-com { color: #7c819f; }
 
-/* CORES FORTES PARA O TEMA CLARO */
 .cb-day .s-kw { color: #2311b5 !important; font-weight: 700; }
 .cb-day .s-fn { color: #551a8b !important; font-weight: 600; }
 .cb-day .s-str { color: #b33600 !important; font-weight: 600; }
@@ -1074,6 +1056,13 @@ def construir_interface(gerar):
 
         historico = gr.HTML(value="", elem_id="chat-history")
 
+        # PARÂMETROS ACIMA DA BARRA DE PERGUNTAS (ORDEM ORIGINAL)
+        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
+            temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
+                                    label="Temperature (0 = determinístico)")
+            top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
+            max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
+
         with gr.Row(elem_id="question-bar"):
             pergunta = gr.Textbox(
                 label="Pergunta",
@@ -1085,13 +1074,6 @@ def construir_interface(gerar):
                 elem_id="question-input",
             )
             btn = gr.Button(ICONE_ENVIAR, variant="primary", elem_id="send-btn")
-
-        # Parâmetros posicionados abaixo da barra e forçados a abrir para cima via flexbox
-        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
-            temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
-                                    label="Temperature (0 = determinístico)")
-            top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
-            max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
 
         entradas = [pergunta, temperature, top_p, max_tokens, historico]
         saidas = [historico, pergunta, btn, boas_vindas]
