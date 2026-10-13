@@ -1003,9 +1003,9 @@ def _ligar(gatilho, fn, entradas, saidas):
 
 
 def construir_interface(gerar):
-    def responder(pergunta, temperature, top_p, max_tokens, historico_atual):
+    def responder(texto_pergunta, temperature, top_p, max_tokens, historico_atual):
         historico_atual = historico_atual or ""
-        pergunta = (pergunta or "").strip()
+        pergunta = str(texto_pergunta or "").strip()
         if not pergunta:
             yield historico_atual, "", gr.update(value=ICONE_ENVIAR, interactive=True), gr.update()
             return
