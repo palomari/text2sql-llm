@@ -419,17 +419,18 @@ footer,
 .brand-icon {
     width: 42px;
     height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border-radius: 13px;
     background: var(--accent-soft);
     color: var(--accent);
+    box-sizing: border-box;
 }
 
 .brand-icon svg {
-    display: block;
-    margin: auto;
+    display: block !important;
+    margin: auto !important;
 }
 
 /* BOTÃO DE TEMA E CORREÇÃO DE EXIBIÇÃO SOL/LUA */
