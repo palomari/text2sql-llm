@@ -1,4 +1,6 @@
 """Funções compartilhadas: schema do banco, prompt e execução de SQL."""
+from __future__ import annotations  # permite `str | None` também no Python 3.9
+
 import re
 import sqlite3
 from pathlib import Path
