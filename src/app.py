@@ -62,7 +62,6 @@ def svg(nome, tam=18, classe=""):
 
 
 def uri_svg(nome, cor="#000000"):
-    """Ícone como data-URI, para usar em CSS (máscara dos cartões e ícone da barra)."""
     desenho = (
         "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' "
         f"stroke='{cor}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>"
@@ -71,10 +70,6 @@ def uri_svg(nome, cor="#000000"):
     return "data:image/svg+xml," + quote(desenho, safe="")
 
 
-# ------------------------------------------------------------------ JavaScript
-# Os botões de tema e de copiar têm um onclick próprio (funciona se o Gradio mantiver o
-# HTML como está) e, de reserva, um ouvinte global instalado na carga da página. O onclick
-# chama stopPropagation(), então os dois nunca agem juntos.
 TEMA_ONCLICK = (
     "event.stopPropagation();document.body.classList.toggle('dark');"
     "try{localStorage.setItem('tema',document.body.classList.contains('dark')?'escuro':'claro')}catch(e){}"
@@ -106,6 +101,8 @@ JS_CARGA = """
         alvo.classList.add('ok');
         setTimeout(() => alvo.classList.remove('ok'), 1200);
       }).catch(() => {});
+    } else if (alvo.dataset.acao === 'topo') {
+      window.scrollTo({top: 0, behavior: 'smooth'});
     }
   });
 }
@@ -119,7 +116,6 @@ JS_ROLAR = """
 """
 
 
-# ------------------------------------------------------------------ SQL: formatação e cores
 SQL_KEYWORDS = {
     "SELECT", "FROM", "WHERE", "GROUP", "BY", "ORDER", "HAVING", "LIMIT", "OFFSET", "JOIN", "LEFT",
     "RIGHT", "INNER", "OUTER", "CROSS", "ON", "AS", "AND", "OR", "NOT", "IN", "IS", "NULL", "LIKE",
@@ -142,7 +138,6 @@ _CLAUSULAS = re.compile(
 
 
 def destacar_sql(texto):
-    """Escapa o texto e envolve palavras-chave, funções, strings e números em <span>."""
     saida = []
     for m in _TOKEN.finditer(texto):
         texto_str, comentario, numero, palavra, espaco, outro = m.groups()
@@ -167,16 +162,13 @@ def destacar_sql(texto):
 
 
 def formatar_sql(sql):
-    """Quebra a SQL em linhas por cláusula (só para exibir; a SQL executada não muda).
-    Trechos entre aspas simples são preservados exatamente."""
     partes = _LITERAL.split(sql.strip())
-    for i in range(0, len(partes), 2):  # posições pares ficam fora de strings
+    for i in range(0, len(partes), 2):
         partes[i] = _CLAUSULAS.sub("\n", re.sub(r"\s+", " ", partes[i]))
     return "".join(partes).strip()
 
 
 def formatar_esquema(esquema):
-    """Deixa cada CREATE TABLE com uma coluna por linha (só para exibir)."""
     saida = []
     for linha in esquema.splitlines():
         m = re.match(r"\s*CREATE TABLE (\w+) \((.*)\);\s*$", linha)
@@ -190,22 +182,22 @@ def formatar_esquema(esquema):
     return "\n".join(saida).strip()
 
 
-# ------------------------------------------------------------------ HTML
 def html_header():
     return (
         '<div class="header-inner">'
-        '<div class="brand"><div class="brand-icon">' + svg("database", 22) + "</div>"
+        '<div class="brand" data-acao="topo" title="Voltar ao início" style="cursor: pointer;">'
+        f'<div class="brand-icon">{svg("database", 22)}</div>'
         f"<span>{TITULO}</span></div>"
         '<button type="button" class="theme-toggle" data-acao="tema" '
         'title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro" '
-        f'onclick="{TEMA_ONCLICK}">' + svg("sun", 19, "i-sun") + svg("moon", 19, "i-moon") + "</button>"
+        f'onclick="{TEMA_ONCLICK}">{svg("sun", 19, "i-sun")}{svg("moon", 19, "i-moon")}</button>'
         "</div>"
     )
 
 
 INTRO_HTML = """
 <div class="welcome">
-    <div class="greeting">Olá! 👋🏻</div>
+    <div class="greeting">Bem-vindo(a)</div>
     <h1>O que você gostaria de saber?</h1>
     <p>Pergunte em linguagem natural sobre a loja fictícia;<br>
     o modelo (Qwen2.5 + LoRA) gera a consulta SQL e ela é executada no banco.</p>
@@ -216,14 +208,14 @@ INTRO_HTML = """
 def html_usuario(pergunta):
     return (
         '<div class="msg user"><div class="bubble">' + html.escape(pergunta) + "</div>"
-        '<div class="av av-user">' + svg("user", 19) + "</div></div>"
+        f'<div class="av av-user">{svg("user", 19)}</div></div>'
     )
 
 
 def html_bot(conteudo):
     return (
-        '<div class="msg bot"><div class="av av-bot">' + svg("sparkles", 18) + "</div>"
-        '<div class="answer">' + conteudo + "</div></div>"
+        f'<div class="msg bot"><div class="av av-bot">{svg("sparkles", 18)}</div>'
+        f'<div class="answer">{conteudo}</div></div>'
     )
 
 
@@ -235,7 +227,6 @@ def html_pensando():
 
 
 def caixa_codigo(texto, variante, numerar=False):
-    """Bloco de código com cores, botão de copiar e (opcional) numeração de linhas."""
     gutter = ""
     if numerar:
         numeros = "\n".join(str(i) for i in range(1, texto.count("\n") + 2))
@@ -243,7 +234,7 @@ def caixa_codigo(texto, variante, numerar=False):
     return (
         f'<div class="code-box cb-{variante}">'
         '<button type="button" class="copy-btn" data-acao="copiar" title="Copiar" '
-        f'aria-label="Copiar" onclick="{COPIAR_ONCLICK}">' + svg("copy", 15) + "</button>"
+        f'aria-label="Copiar" onclick="{COPIAR_ONCLICK}">{svg("copy", 15)}</button>'
         f'<div class="code-body">{gutter}<pre><code>{destacar_sql(texto)}</code></pre></div></div>'
     )
 
@@ -253,7 +244,6 @@ def titulo(icone, texto):
 
 
 def secao(icone, texto, corpo, aberta=None):
-    """Seção com borda. Com `aberta` definido, vira um bloco que o usuário pode recolher."""
     if aberta is None:
         return f'<div class="sec">{titulo(icone, texto)}{corpo}</div>'
     atributo = " open" if aberta else ""
@@ -270,7 +260,6 @@ def status(texto, erro=False):
 
 
 def html_resposta(sql, resultado=None, erro=None, esquema_aberto=True):
-    """Cartão de resposta. Tudo que vem do modelo ou do banco passa por html.escape."""
     exibicao = (formatar_sql(sql) + ";") if sql else "(vazia)"
     if erro is not None:
         corpo = status(f"Erro ao executar a SQL: {erro}", erro=True)
@@ -292,12 +281,14 @@ def html_resposta(sql, resultado=None, erro=None, esquema_aberto=True):
             )
             aviso = f" (mostrando só as primeiras {LIMITE_LINHAS})" if n >= LIMITE_LINHAS else ""
             corpo = f'<div class="tabela">{tabela}</div>' + status(f"{n} linha(s) retornada(s){aviso}.")
+    
+    # ORDEM INVERTIDA: 1º Resultado da consulta, 2º SQL gerada, 3º Esquema do banco
     return html_bot(
-        titulo("code", "SQL gerada")
+        secao("table", "Resultado da consulta", corpo)
+        + titulo("code", "SQL gerada")
         + caixa_codigo(exibicao, "night", numerar=True)
         + secao("database", "Esquema do banco", caixa_codigo(formatar_esquema(SCHEMA), "day"),
                 aberta=esquema_aberto)
-        + secao("table", "Resultado da consulta", corpo)
     )
 
 
@@ -309,7 +300,6 @@ def html_falha(exc):
     return html_bot(status(f"Erro ao gerar a resposta: {exc}", erro=True))
 
 
-# ------------------------------------------------------------------ CSS
 CSS_BASE = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -431,18 +421,25 @@ footer,
 .brand-icon {
     width: 42px;
     height: 42px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 13px;
     background: var(--accent-soft);
     color: var(--accent);
 }
 
+.brand-icon svg {
+    display: block;
+    margin: auto;
+}
+
 .theme-toggle {
     width: 42px;
     height: 42px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     border: 1px solid var(--border);
     background: var(--surface);
@@ -450,6 +447,12 @@ footer,
     box-shadow: 0 4px 14px rgba(76, 66, 170, .08);
     cursor: pointer;
     transition: transform .15s ease;
+    padding: 0;
+}
+
+.theme-toggle svg {
+    display: block;
+    margin: auto;
 }
 
 .theme-toggle:hover {
@@ -466,6 +469,7 @@ body.dark .theme-toggle .i-sun {
 
 body.dark .theme-toggle .i-moon {
     display: block;
+    stroke: #ffffff !important;
 }
 
 /* ---------- boas-vindas ---------- */
@@ -556,11 +560,11 @@ body.dark .theme-toggle .i-moon {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
-    gap: 10px !important;
-    max-width: 620px;
+    gap: 12px !important;
+    max-width: 720px;
     width: calc(100% - 40px);
     margin: 0 auto 18px !important;
-    padding: 8px 10px 8px 12px !important;
+    padding: 10px 12px 10px 16px !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 999px !important;
@@ -569,14 +573,14 @@ body.dark .theme-toggle .i-moon {
 
 #question-bar::before {
     content: "";
-    flex: 0 0 34px;
-    width: 34px;
-    height: 34px;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background-color: var(--accent-soft);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 17px;
+    background-size: 18px;
 }
 
 #question-bar > * {
@@ -606,21 +610,21 @@ body.dark .theme-toggle .i-moon {
     box-shadow: none !important;
     outline: none !important;
     resize: none !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     color: var(--text) !important;
 }
 
 #send-btn {
     flex: 0 0 auto !important;
-    width: 58px !important;
-    min-width: 58px !important;
-    height: 36px !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    height: 40px !important;
     padding: 0 !important;
-    border-radius: 18px !important;
+    border-radius: 20px !important;
     border: none !important;
     background: var(--accent-soft) !important;
     color: var(--accent) !important;
-    font-size: 20px !important;
+    font-size: 22px !important;
     font-weight: 600 !important;
     box-shadow: none !important;
 }
@@ -630,9 +634,9 @@ body.dark .theme-toggle .i-moon {
 }
 
 #params {
-    max-width: 620px;
+    max-width: 720px;
     width: calc(100% - 40px);
-    margin: 0 auto 34px !important;
+    margin: 0 auto 14px !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 16px !important;
@@ -670,8 +674,14 @@ body.dark .theme-toggle .i-moon {
 
 .av {
     flex: 0 0 auto;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.av svg {
+    display: block;
+    margin: auto;
 }
 
 .av-user {
@@ -712,6 +722,11 @@ body.dark .theme-toggle .i-moon {
     font-size: 13.5px;
     font-weight: 600;
     list-style: none;
+}
+
+.title svg {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 summary.title {
@@ -798,13 +813,20 @@ details[open] > summary.title {
     right: 10px;
     width: 28px;
     height: 28px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     border-radius: 8px;
     background: transparent;
     color: #9aa0c4;
     cursor: pointer;
+    padding: 0;
+}
+
+.copy-btn svg {
+    display: block;
+    margin: auto;
 }
 
 .copy-btn:hover {
@@ -820,11 +842,14 @@ details[open] > summary.title {
 .cb-night .s-str { color: #ffcf9a; }
 .cb-night .s-num { color: #7fd6ff; }
 .cb-night .s-com { color: #7c819f; }
-.cb-day .s-kw { color: #5b4bd8; }
-.cb-day .s-fn { color: #7a3fd0; }
-.cb-day .s-str { color: #b4541a; }
-.cb-day .s-num { color: #0b7a9e; }
-.cb-day .s-com { color: #8a8fb5; }
+
+/* CORES CORRIGIDAS PARA O TEMA CLARO */
+.cb-day .s-kw { color: #3b28cc !important; font-weight: 600; }
+.cb-day .s-fn { color: #6230b8 !important; }
+.cb-day .s-str { color: #9c3c0a !important; }
+.cb-day .s-num { color: #006699 !important; }
+.cb-day .s-com { color: #5f638f !important; }
+
 body.dark .cb-day .s-kw { color: #a99dff; }
 body.dark .cb-day .s-fn { color: #c9a8ff; }
 body.dark .cb-day .s-str { color: #ffbf8a; }
@@ -889,6 +914,11 @@ table.resultado tbody tr:last-child td {
     font-size: 12.5px;
 }
 
+.status svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .status.erro {
     background: var(--err-bg);
     color: var(--err-text);
@@ -931,7 +961,6 @@ table.resultado tbody tr:last-child td {
 
 
 def css_icones():
-    """Regras geradas: ícone de cada cartão de sugestão e ícone da barra de pergunta."""
     regras = []
     for i, (icone, _) in enumerate(SUGESTOES, 1):
         uri = uri_svg(icone)
@@ -945,7 +974,6 @@ def css_icones():
 CSS = CSS_BASE + css_icones()
 
 
-# ------------------------------------------------------------------ interface
 def _aceita(func, nome):
     try:
         return nome in inspect.signature(func).parameters
@@ -954,24 +982,17 @@ def _aceita(func, nome):
 
 
 def _ligar(gatilho, fn, entradas, saidas):
-    """Liga um evento. Esconde o indicador de progresso do Gradio e rola até a resposta;
-    se a versão instalada não aceitar algum desses extras, segue sem eles."""
     try:
         evento = gatilho(fn, inputs=entradas, outputs=saidas, show_progress="hidden")
     except TypeError:
         evento = gatilho(fn, inputs=entradas, outputs=saidas)
     try:
         evento.then(None, None, None, js=JS_ROLAR)
-    except Exception:  # noqa: BLE001
+    except Exception:
         pass
 
 
 def construir_interface(gerar):
-    """Monta a interface. `gerar(pergunta, temperature, top_p, max_tokens) -> sql`.
-
-    Devolve (demo, launch_kwargs). `theme`, `css` e `js` ficam no Blocks() nas versões do
-    Gradio que os aceitam ali e no launch() nas que os moveram para lá."""
-
     def responder(pergunta, temperature, top_p, max_tokens, historico_atual):
         historico_atual = historico_atual or ""
         pergunta = (pergunta or "").strip()
@@ -979,11 +1000,10 @@ def construir_interface(gerar):
             yield historico_atual, "", gr.update(value=ICONE_ENVIAR, interactive=True), gr.update()
             return
 
-        esconder = gr.update(visible=False)  # some com as boas-vindas depois da 1ª pergunta
+        esconder = gr.update(visible=False)
         usuario = html_usuario(pergunta)
         primeira = not historico_atual
 
-        # mostra a pergunta na hora e bloqueia o botão enquanto o modelo gera
         yield (historico_atual + usuario + html_pensando(), "",
                gr.update(value=ICONE_AGUARDE, interactive=False), esconder)
 
@@ -994,7 +1014,7 @@ def construir_interface(gerar):
                 resposta = html_resposta(sql, resultado=res, esquema_aberto=primeira)
             else:
                 resposta = html_resposta(sql, erro=res, esquema_aberto=primeira)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             resposta = html_falha(exc)
 
         yield (historico_atual + usuario + resposta, "",
@@ -1027,6 +1047,13 @@ def construir_interface(gerar):
 
         historico = gr.HTML(value="", elem_id="chat-history")
 
+        # PARÂMETROS ACIMA DA BARRA DE PESQUISA (ABRINDO PARA CIMA)
+        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
+            temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
+                                    label="Temperature (0 = determinístico)")
+            top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
+            max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
+
         with gr.Row(elem_id="question-bar"):
             pergunta = gr.Textbox(
                 label="Pergunta",
@@ -1039,19 +1066,11 @@ def construir_interface(gerar):
             )
             btn = gr.Button(ICONE_ENVIAR, variant="primary", elem_id="send-btn")
 
-        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
-            with gr.Row():
-                temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
-                                        label="Temperature (0 = determinístico)")
-                top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
-                max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
-
         entradas = [pergunta, temperature, top_p, max_tokens, historico]
         saidas = [historico, pergunta, btn, boas_vindas]
 
         _ligar(btn.click, responder, entradas, saidas)
         _ligar(pergunta.submit, responder, entradas, saidas)
-        # cada sugestão envia a própria pergunta direto, sem passar pela caixa de texto
         for botao, (_, texto) in zip(botoes, SUGESTOES):
             _ligar(
                 botao.click,
@@ -1063,7 +1082,6 @@ def construir_interface(gerar):
     return demo, launch_kwargs
 
 
-# ------------------------------------------------------------------ modo demo
 DEMO_SQL = {
     "Quantos clientes são do estado SP?":
         "SELECT COUNT(*) FROM clientes WHERE estado = 'SP'",
@@ -1080,11 +1098,9 @@ DEMO_SQL = {
 
 
 def gerador_demo():
-    """Gerador de mentira para testar a interface sem modelo e sem GPU."""
-
     def gerar(pergunta, temperature, top_p, max_tokens):
         time.sleep(0.5)
-        if "erro" in pergunta.lower():  # para ver como a tela mostra um erro de SQL
+        if "erro" in pergunta.lower():
             return "SELECT * FROM tabela_que_nao_existe"
         return DEMO_SQL.get(pergunta.strip(), "SELECT nome, cidade, estado FROM clientes LIMIT 5")
 
@@ -1100,7 +1116,6 @@ def main():
     ap.add_argument("--demo", action="store_true", help="só a interface, sem carregar o modelo")
     args = ap.parse_args()
 
-    # Confere o adaptador antes de qualquer coisa pesada, com uma mensagem que explica o que fazer.
     if not args.demo and args.adapter and not (Path(args.adapter) / "adapter_config.json").exists():
         raise SystemExit(
             f"\nAdaptador não encontrado em '{args.adapter}' (falta o arquivo adapter_config.json).\n"
@@ -1115,14 +1130,12 @@ def main():
     def gerar(pergunta, temperature, top_p, max_tokens):
         return estado["fn"](pergunta, temperature, top_p, max_tokens)
 
-    # A interface é montada ANTES de carregar o modelo: se houver erro nela, aparece em
-    # segundos, e não depois de minutos de carregamento.
     demo, launch_kwargs = construir_interface(gerar)
 
     if args.demo:
         estado["fn"] = gerador_demo()
     else:
-        from evaluate_model import generate_sql, load_model  # importa torch só aqui
+        from evaluate_model import generate_sql, load_model
 
         tok, model = load_model(args.model, args.adapter, not args.no_4bit)
 
