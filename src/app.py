@@ -280,7 +280,6 @@ def html_resposta(sql, resultado=None, erro=None, esquema_aberto=True):
             aviso = f" (mostrando só as primeiras {LIMITE_LINHAS})" if n >= LIMITE_LINHAS else ""
             corpo = f'<div class="tabela">{tabela}</div>' + status(f"{n} linha(s) retornada(s){aviso}.")
     
-    # Ordem com espaçamento explícito entre o Resultado e a SQL gerada
     return html_bot(
         secao("table", "Resultado da consulta", corpo)
         + '<div style="margin-top: 18px;"></div>'
@@ -433,12 +432,13 @@ footer,
     margin: auto;
 }
 
+/* BOTÃO DE TEMA CENTRALIZADO PERFEITAMENTE */
 .theme-toggle {
     width: 42px;
     height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border-radius: 50%;
     border: 1px solid var(--border);
     background: var(--surface);
@@ -446,12 +446,14 @@ footer,
     box-shadow: 0 4px 14px rgba(76, 66, 170, .08);
     cursor: pointer;
     transition: transform .15s ease;
-    padding: 0;
+    padding: 0 !important;
+    line-height: 0 !important;
 }
 
 .theme-toggle svg {
-    display: block;
-    margin: auto;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
 }
 
 .theme-toggle:hover {
@@ -467,7 +469,7 @@ body.dark .theme-toggle .i-sun {
 }
 
 body.dark .theme-toggle .i-moon {
-    display: block;
+    display: inline-block !important;
     stroke: #ffffff !important;
 }
 
@@ -554,7 +556,7 @@ body.dark .theme-toggle .i-moon {
     mask-size: contain;
 }
 
-/* ---------- parâmetros de geração (abrindo para cima) ---------- */
+/* ---------- PARÂMETROS ABRINDO PARA CIMA ---------- */
 #params {
     max-width: 720px;
     width: calc(100% - 40px);
@@ -564,16 +566,23 @@ body.dark .theme-toggle .i-moon {
     border-radius: 16px !important;
 }
 
-/* Força o painel colapsável a expandir para cima */
+/* Força a expansão do Accordion para cima através de Flexbox invertido */
+#params .block, #params .form {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+}
+
 #params details {
-    display: flex;
-    flex-direction: column-reverse;
+    display: flex !important;
+    flex-direction: column-reverse !important;
 }
+
 #params details > summary {
-    order: 2;
+    order: 2 !important;
 }
-#params details > .c, #params details > div:not(summary) {
-    order: 1;
+
+#params details > div:not(summary) {
+    order: 1 !important;
 }
 
 /* ---------- barra de pergunta ---------- */
@@ -684,16 +693,19 @@ body.dark .theme-toggle .i-moon {
     overflow-wrap: anywhere;
 }
 
+/* ÍCONES DOS AVATARES CENTRALIZADOS */
 .av {
     flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 0 !important;
 }
 
 .av svg {
-    display: block;
-    margin: auto;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
 }
 
 .av-user {
@@ -819,26 +831,29 @@ details[open] > summary.title {
     padding: 0 !important;
 }
 
+/* BOTÃO DE COPIAR CENTRALIZADO */
 .copy-btn {
     position: absolute;
     top: 10px;
     right: 10px;
     width: 28px;
     height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border: none;
     border-radius: 8px;
     background: transparent;
     color: #9aa0c4;
     cursor: pointer;
-    padding: 0;
+    padding: 0 !important;
+    line-height: 0 !important;
 }
 
 .copy-btn svg {
-    display: block;
-    margin: auto;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
 }
 
 .copy-btn:hover {
@@ -855,7 +870,7 @@ details[open] > summary.title {
 .cb-night .s-num { color: #7fd6ff; }
 .cb-night .s-com { color: #7c819f; }
 
-/* CORES FORTES PARA O TEMA CLARO (GARANTE VISIBILIDADE TOTAL) */
+/* CORES FORTES PARA O TEMA CLARO */
 .cb-day .s-kw { color: #2311b5 !important; font-weight: 700; }
 .cb-day .s-fn { color: #551a8b !important; font-weight: 600; }
 .cb-day .s-str { color: #b33600 !important; font-weight: 600; }
@@ -1059,13 +1074,6 @@ def construir_interface(gerar):
 
         historico = gr.HTML(value="", elem_id="chat-history")
 
-        # Ordem invertida: parâmetros logo acima da barra para abrirem para cima
-        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
-            temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
-                                    label="Temperature (0 = determinístico)")
-            top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
-            max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
-
         with gr.Row(elem_id="question-bar"):
             pergunta = gr.Textbox(
                 label="Pergunta",
@@ -1077,6 +1085,13 @@ def construir_interface(gerar):
                 elem_id="question-input",
             )
             btn = gr.Button(ICONE_ENVIAR, variant="primary", elem_id="send-btn")
+
+        # Parâmetros posicionados abaixo da barra e forçados a abrir para cima via flexbox
+        with gr.Accordion("Parâmetros de geração", open=False, elem_id="params"):
+            temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1,
+                                    label="Temperature (0 = determinístico)")
+            top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
+            max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
 
         entradas = [pergunta, temperature, top_p, max_tokens, historico]
         saidas = [historico, pergunta, btn, boas_vindas]
