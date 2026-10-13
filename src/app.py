@@ -47,6 +47,9 @@ CSS = """
     background:
         radial-gradient(ellipse at 50% 0%, #ffffff 0%, transparent 60%),
         linear-gradient(135deg, #f5f4ff, #e9eaff) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .gradio-container,
@@ -63,7 +66,6 @@ CSS = """
     border-bottom: 1px solid var(--border);
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(8px);
-    margin-bottom: 20px;
 }
 
 .brand {
@@ -87,73 +89,61 @@ CSS = """
     font-size: 23px;
 }
 
-#settings-btn {
-    width: 42px !important;
-    height: 42px !important;
-    min-width: 42px !important;
-    border-radius: 50% !important;
-    background: white !important;
-    border: 1px solid var(--border) !important;
-    color: var(--primary) !important;
-    font-size: 18px !important;
-    box-shadow: 0 4px 12px rgba(98, 84, 237, 0.1) !important;
+.header-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
 }
 
-#settings-menu {
-    max-width: 600px;
-    margin: 0 auto 20px auto;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(82, 73, 180, 0.12);
-}
-
-#landing {
-    padding: 24px 20px 40px;
-    width: 100%;
-    max-width: 1200px;
+#main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    max-width: 1000px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .welcome {
     text-align: center;
-    margin: 4px auto 40px;
+    margin: 10px auto 30px;
     max-width: 740px;
 }
 
 .welcome .greeting {
     color: var(--muted);
     font-size: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .welcome h1 {
     color: var(--text);
-    font-size: clamp(25px, 3vw, 34px);
+    font-size: clamp(24px, 3vw, 32px);
     line-height: 1.25;
     font-weight: 750;
-    letter-spacing: -.8px;
-    margin: 0 0 12px;
+    margin: 0 0 10px;
 }
 
 .welcome p {
     color: var(--muted);
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.6;
     margin: 0;
 }
 
 #suggestions {
     width: 100%;
-    margin: 0 auto 48px;
+    margin: 0 auto 30px;
 }
 
 #suggestions button {
     text-align: left !important;
-    min-height: 100px;
+    min-height: 90px;
     height: 100%;
-    padding: 17px 15px !important;
+    padding: 15px !important;
     white-space: normal !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
@@ -169,20 +159,61 @@ CSS = """
     transform: translateY(-2px);
 }
 
-#suggestions button span {
-    white-space: normal !important;
-    font-size: 13px !important;
-    line-height: 1.6 !important;
+#chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.turn-block {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 8px 30px rgba(74, 67, 165, .05);
+}
+
+#question-bubble {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.question-bubble-inner {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 15px;
+    background: #e3dfff;
+    color: #242052;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.section-title {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    margin: 10px 0 6px;
+}
+
+#question-container {
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    width: 100%;
 }
 
 #question-bar {
-    max-width: 750px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 9px 12px;
+    padding: 6px 10px;
     border: 1px solid var(--border);
     border-radius: 22px;
-    background: rgba(255,255,255,.9);
-    box-shadow: 0 8px 28px rgba(82, 73, 180, .09);
+    background: white;
+    box-shadow: 0 8px 28px rgba(82, 73, 180, .08);
 }
 
 #question-bar textarea {
@@ -195,151 +226,57 @@ CSS = """
     color: var(--text) !important;
 }
 
-#question-bar textarea:focus {
-    box-shadow: none !important;
-}
-
 #send-btn {
-    min-width: 45px !important;
-    height: 43px !important;
-    border-radius: 15px !important;
+    min-width: 42px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
     background: #ded9ff !important;
     color: #5143ed !important;
     border: none !important;
-    font-size: 22px !important;
+    font-size: 18px !important;
 }
 
 #send-btn:hover {
     background: #c9c1ff !important;
 }
 
-#answer-panel {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 14px 16px 18px;
-    background: rgba(255,255,255,.76);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    box-shadow: 0 8px 30px rgba(74, 67, 165, .06);
-}
-
-#question-bubble {
-    display: flex;
-    justify-content: flex-end;
-    margin: 0 auto 18px;
-    max-width: 900px;
-}
-
-.question-bubble-inner {
-    max-width: 80%;
-    padding: 14px 18px;
-    border-radius: 15px;
-    background: #e3dfff;
-    color: #242052;
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-}
-
-.section-title {
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 700;
-    margin: 5px 0 10px;
-}
-
-#answer-panel .block,
-#answer-panel .form {
-    border-color: var(--border) !important;
-}
-
-#answer-panel .cm-editor,
-#answer-panel .code_editor {
-    border-radius: 11px !important;
-}
-
-#answer-panel .wrap,
-#answer-panel table {
-    border-radius: 10px;
-}
-
-#answer-panel .accordion {
-    border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-    background: rgba(255,255,255,.65) !important;
-    margin-top: 14px;
-}
-
 #status {
-    margin-top: 12px;
-    padding: 9px 12px;
-    border-radius: 9px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
     background: #f0faf6;
     color: #269773;
     font-size: 12px;
 }
 
-#new-question {
-    margin-top: 18px;
-    border-radius: 12px !important;
-}
-
 footer {
     display: none !important;
-}
-
-@media (max-width: 700px) {
-    #app-header {
-        flex-direction: column;
-        gap: 12px;
-        padding: 14px;
-    }
-    #landing {
-        padding: 12px 10px;
-    }
 }
 """
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--adapter",
-        default=None,
-        help="Pasta do adaptador LoRA (vazio = modelo base)",
-    )
+    ap.add_argument("--adapter", default=None)
     ap.add_argument("--model", default=MODEL_ID)
     ap.add_argument("--no_4bit", action="store_true")
-    ap.add_argument(
-        "--share",
-        action="store_true",
-        help="Gera link público (útil no Colab)",
-    )
+    ap.add_argument("--share", action="store_true")
     args = ap.parse_args()
 
-    tok, model = load_model(
-        args.model,
-        args.adapter,
-        not args.no_4bit,
-    )
+    tok, model = load_model(args.model, args.adapter, not args.no_4bit)
 
-    def responder(pergunta, temperature, top_p, max_tokens):
-        pergunta = pergunta or ""
+    def responder(pergunta, temperature, top_p, max_tokens, historico_atual):
+        pergunta = (pergunta or "").strip()
+        if not pergunta:
+            return historico_atual, "", gr.update(value="➜")
 
-        if not pergunta.strip():
-            return (
-                gr.update(),
-                gr.update(),
-                gr.update(),
-                gr.update(),
-                gr.update(),
-                gr.update(),
-            )
+        # Mostra spinner de carregamento no botão
+        yield historico_atual, "", gr.update(value="⏳")
 
         pergunta_html = (
-            '<div class="question-bubble-inner">'
-            + html.escape(pergunta)
-            + "</div>"
+            f'<div id="question-bubble"><div class="question-bubble-inner">'
+            f"{html.escape(pergunta)}"
+            f"</div></div>"
         )
 
         try:
@@ -357,46 +294,43 @@ def main():
             ok, resultado = run_sql(sql)
 
             if not ok:
-                return (
-                    pergunta_html,
-                    sql,
-                    pd.DataFrame(),
-                    f"Erro ao executar a SQL: {resultado}",
-                    gr.update(visible=False),
-                    gr.update(visible=True),
+                conteudo_resposta = (
+                    f"{pergunta_html}"
+                    f'<div class="turn-block">'
+                    f'<div class="section-title">〈/〉 SQL gerada</div>'
+                    f"<pre><code>{html.escape(sql)}</code></pre>"
+                    f'<div style="color: red; font-size: 13px; margin-top: 10px;">Erro ao executar a SQL: {resultado}</div>'
+                    f"</div>"
+                )
+            else:
+                cols, rows = resultado
+                tabela_df = pd.DataFrame(rows, columns=cols)
+                # Formata tabela HTML simples para o histórico do chat contínuo
+                tabela_html = tabela_df.to_html(classes="dataframe", index=False, border=0)
+
+                conteudo_resposta = (
+                    f"{pergunta_html}"
+                    f'<div class="turn-block">'
+                    f'<div class="section-title">〈/〉 SQL gerada</div>'
+                    f"<pre style='background:#f4f3ff; padding:10px; border-radius:8px;'><code>{html.escape(sql)}</code></pre>"
+                    f'<div class="section-title">▤ Esquema do banco</div>'
+                    f"<pre style='background:#f4f3ff; padding:10px; border-radius:8px; font-size:11px;'><code>{html.escape(SCHEMA)}</code></pre>"
+                    f'<div class="section-title">▦ Resultado da consulta ({len(rows)} linha(s))</div>'
+                    f"<div style='overflow-x:auto; margin-top:5px;'>{tabela_html}</div>"
+                    f'<div id="status">✓ {len(rows)} linha(s) retornada(s).</div>'
+                    f"</div>"
                 )
 
-            cols, rows = resultado
-            tabela_df = pd.DataFrame(rows, columns=cols)
-
-            return (
-                pergunta_html,
-                sql,
-                tabela_df,
-                f"✓ {len(rows)} linha(s) retornada(s).",
-                gr.update(visible=False),
-                gr.update(visible=True),
-            )
+            novo_historico = (historico_atual or "") + "<br>" + conteudo_resposta
+            yield novo_historico, "", gr.update(value="➜")
 
         except Exception as exc:
-            return (
-                pergunta_html,
-                "",
-                pd.DataFrame(),
-                f"Erro ao gerar ou executar a consulta: {exc}",
-                gr.update(visible=False),
-                gr.update(visible=True),
+            erro_html = (
+                f"{pergunta_html}"
+                f'<div class="turn-block"><div style="color: red;">Erro: {exc}</div></div>'
             )
-
-    def nova_pergunta():
-        return (
-            "",
-            "",
-            pd.DataFrame(),
-            "",
-            gr.update(visible=True),
-            gr.update(visible=False),
-        )
+            novo_historico = (historico_atual or "") + "<br>" + erro_html
+            yield novo_historico, "", gr.update(value="➜")
 
     with gr.Blocks(
         title="Text-to-SQL em português",
@@ -409,10 +343,7 @@ def main():
         css=CSS,
     ) as demo:
 
-        # Estado para controlar o painel de configurações (Aberto/Fechado)
-        settings_state = gr.State(value=False)
-
-        # Cabeçalho
+        # Cabeçalho com Parâmetros de Geração e links no topo
         with gr.Row(elem_id="app-header"):
             gr.HTML("""
             <div class="brand">
@@ -420,51 +351,27 @@ def main():
                 <span>Text-to-SQL em português</span>
             </div>
             """)
-            settings_btn = gr.Button("⚙", elem_id="settings-btn")
+            with gr.Row(elem_id="", scale=0, custom_css="gap:15px; align-items:center;"):
+                gr.HTML('<span style="cursor:pointer; color:var(--muted);">Usar via API 🚀</span>')
+                gr.HTML('<span style="color:var(--border);">·</span>')
+                gr.HTML('<span style="cursor:pointer; color:var(--muted);">Construído com Gradio 🔶</span>')
+                gr.HTML('<span style="color:var(--border);">·</span>')
+                
+        with gr.Accordion("⚙ Parâmetros de Geração & Configurações", open=False):
+            with gr.Row():
+                temperature = gr.Slider(0.0, 1.5, value=0.0, step=0.1, label="Temperature (0 = determinístico)")
+                top_p = gr.Slider(0.1, 1.0, value=0.9, step=0.05, label="Top-p")
+                max_tokens = gr.Slider(32, 400, value=200, step=8, label="Máximo de tokens")
 
-        # Painel de configurações dropdown
-        with gr.Column(visible=False, elem_id="settings-menu") as settings_panel:
-            gr.Markdown("### ⚙ Painel de Configurações")
-            
-            with gr.Accordion("Parâmetros de geração", open=True):
-                temperature = gr.Slider(
-                    0.0, 1.5, value=0.0, step=0.1,
-                    label="Temperature (0 = determinístico)",
-                )
-                top_p = gr.Slider(
-                    0.1, 1.0, value=0.9, step=0.05,
-                    label="Top-p",
-                )
-                max_tokens = gr.Slider(
-                    32, 400, value=200, step=8,
-                    label="Máximo de tokens",
-                )
-            
-            gr.Markdown("---")
-            gr.Markdown("• **Usar via API** 🚀<br>• **Construído com Gradio** 🔶")
-
-        # Evento do botão de engrenagem usando gr.State para evitar InvalidComponentError
-        def alternar_painel(estado):
-            novo_estado = not estado
-            return novo_estado, gr.update(visible=novo_estado)
-
-        settings_btn.click(
-            fn=alternar_painel,
-            inputs=[settings_state],
-            outputs=[settings_state, settings_panel],
-        )
-
-        landing = gr.Column(visible=True, elem_id="landing")
-
-        with landing:
-            gr.HTML("""
+        # Conteúdo Principal estilo Chat
+        with gr.Column(elem_id="main-content"):
+            landing_intro = gr.HTML("""
             <div class="welcome">
                 <div class="greeting">Olá! 👋🏻</div>
                 <h1>O que você gostaria de saber?</h1>
                 <p>
                     Pergunte em linguagem natural sobre a loja fictícia;<br>
-                    o modelo Qwen2.5 + LoRA gera a consulta SQL e ela é
-                    executada no banco.
+                    o modelo Qwen2.5 + LoRA gera a consulta SQL e ela é executada no banco.
                 </p>
             </div>
             """)
@@ -478,10 +385,14 @@ def main():
                     gr.Button("☷\n\nQuantos pedidos existem por status?"),
                 ]
 
+            chat_history = gr.HTML(value="", elem_id="chat-history")
+
+        # Barra de perguntas fixa na parte inferior (estilo chat contínuo)
+        with gr.Column(elem_id="question-container"):
             with gr.Row(elem_id="question-bar"):
                 pergunta = gr.Textbox(
                     label="",
-                    placeholder="Faça sua pergunta aqui...",
+                    placeholder="Faça sua nova pergunta aqui...",
                     lines=1,
                     max_lines=4,
                     show_label=False,
@@ -495,83 +406,15 @@ def main():
                     elem_id="send-btn",
                 )
 
-        answer = gr.Column(visible=False)
+        # Eventos
+        inputs_list = [pergunta, temperature, top_p, max_tokens, chat_history]
+        outputs_list = [chat_history, pergunta, btn]
 
-        with answer:
-            question_html = gr.HTML(elem_id="question-bubble")
-
-            with gr.Column(elem_id="answer-panel"):
-                gr.HTML('<div class="section-title">〈/〉 SQL gerada</div>')
-
-                sql_out = gr.Code(
-                    label="",
-                    language="sql",
-                    interactive=False,
-                )
-
-                with gr.Accordion("▤  Esquema do banco", open=True):
-                    gr.Code(
-                        value=SCHEMA,
-                        language="sql",
-                        label="",
-                        interactive=False,
-                    )
-
-                gr.HTML('<div class="section-title">▦ Resultado da consulta</div>')
-
-                tabela = gr.Dataframe(
-                    label="",
-                    interactive=False,
-                    wrap=True,
-                )
-
-                status = gr.Markdown(elem_id="status")
-
-            with gr.Row():
-                nova = gr.Button(
-                    "＋ Nova pergunta",
-                    variant="secondary",
-                    elem_id="new-question",
-                )
-
-        saidas = [
-            question_html,
-            sql_out,
-            tabela,
-            status,
-            landing,
-            answer,
-        ]
-
-        btn.click(
-            responder,
-            inputs=[pergunta, temperature, top_p, max_tokens],
-            outputs=saidas,
-        )
-
-        pergunta.submit(
-            responder,
-            inputs=[pergunta, temperature, top_p, max_tokens],
-            outputs=saidas,
-        )
+        btn.click(responder, inputs=inputs_list, outputs=outputs_list)
+        pergunta.submit(responder, inputs=inputs_list, outputs=outputs_list)
 
         for botao, exemplo in zip(botoes, EXEMPLOS):
-            botao.click(
-                fn=lambda q=exemplo: q,
-                outputs=pergunta,
-            )
-
-        nova.click(
-            nova_pergunta,
-            outputs=[
-                pergunta,
-                sql_out,
-                tabela,
-                status,
-                landing,
-                answer,
-            ],
-        )
+            botao.click(fn=lambda q=exemplo: q, outputs=pergunta)
 
     demo.launch(share=args.share)
 
