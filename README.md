@@ -31,10 +31,10 @@
 
 | Nome Completo | RM |
 | :--- | :---: |
-| **Julia Ortiz** | 5555 |
-| **Julia Palomari** | 4444 |
-| **Leticia Fontana** | 3333 |
-| **Vinicius** | 2222 |
+| **Julia Ortiz** | 550204 |
+| **Julia Palomari** | 551910 |
+| **Leticia Fontana** | 550289 |
+| **Vinicius Borges** | 97767 |
 
 </div>
 
