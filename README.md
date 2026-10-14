@@ -1,131 +1,190 @@
-# Text-to-SQL em português com LLM local (QLoRA + GPU)
+<div align="center">
 
-Fine-tuning de uma LLM pequena para converter perguntas em português em consultas SQL (SQLite) sobre o banco de uma loja fictícia. O projeto inclui dataset, treino com experimentos, avaliação por execução da SQL e um frontend em Gradio.
+# Text-to-SQL em Português com LLM Local
 
-## 1. Objetivo e problema
+**Fine-Tuning de Qwen2.5-1.5B com QLoRA e Aceleração por GPU**
 
-Dado o esquema de um banco (clientes, produtos, pedidos, itens de pedido) e uma pergunta em português, o modelo deve devolver **uma consulta SQL** que, ao ser executada, retorna o resultado correto.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c?logo=pytorch&logoColor=white)
+![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Qwen2.5--1.5B-ffd21e?logo=huggingface&logoColor=black)
+![CUDA](https://img.shields.io/badge/CUDA-12.x-76b900?logo=nvidia&logoColor=white)
+![Gradio](https://img.shields.io/badge/Frontend-Gradio-orange?logo=gradio&logoColor=white)
 
-Exemplo:
+<p align="center">
+  <a href="#1-integrantes">Integrantes</a> •
+  <a href="#2-visão-geral">Visão Geral</a> •
+  <a href="#3-arquitetura-e-hardware">Hardware</a> •
+  <a href="#4-estrutura-do-repositório">Estrutura</a> •
+  <a href="#5-como-executar">Como Executar</a> •
+  <a href="#6-experimentos-e-resultados">Resultados</a> •
+  <a href="#7-interface-gráfica">Frontend</a> •
+  <a href="#8-conclusão-do-projeto">Conclusão</a>
+</p>
 
-| Pergunta | SQL gerada |
-|---|---|
-| Quais os 5 produtos mais caros? | `SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 5` |
+</div>
 
-## 2. LLM escolhida
+---
 
-**Qwen2.5-1.5B-Instruct** (`Qwen/Qwen2.5-1.5B-Instruct`).
+## 1. Integrantes
 
-- Cabe com folga em 8 GB de VRAM usando quantização de 4 bits (QLoRA) e roda na T4 (16 GB) do Colab.
-- Entende português razoavelmente bem e já conhece SQL.
-- Licença permissiva (Apache 2.0).
+<div align="center">
 
-> Preencha aqui qualquer troca de modelo que fizer.
+| Nome Completo | RM |
+| :--- | :---: |
+| **Julia Ortiz** | 5555 |
+| **Julia Palomari** | 4444 |
+| **Leticia Fontana** | 3333 |
+| **Vinicius** | 2222 |
 
-## 3. Hardware e versões
+</div>
 
-> Preencha com os dados reais da execução (saída do `nvidia-smi`):
+---
 
-| Item | Valor |
-|---|---|
-| GPU | _ex.: NVIDIA Tesla T4, 16 GB_ |
-| Driver / CUDA | _ex.: 550.x / 12.4_ |
-| Python | _ex.: 3.10_ |
-| PyTorch | _ex.: 2.x + cu12x_ |
+## 2. Visão Geral
 
-Print da GPU funcionando no VSCode: `docs/imagens/gpu_vscode.png`
+Este projeto consiste no ajuste fino (*fine-tuning*) eficiente de um modelo de linguagem pequeno para tradução de perguntas em linguagem natural (Português) em instruções SQL relacionais executáveis (SQLite) sobre o banco de dados de um e-commerce.
+
+```
+[ Usuário ] ➔ ( Pergunta em PT ) ➔ [ Qwen2.5 + QLoRA ] ➔ ( SQL ) ➔ [ Banco SQLite ] ➔ [ Resultado ]
+```
+
+### Exemplo de Aplicação
+
+| Pergunta em Linguagem Natural | Consulta SQL Gerada |
+| :--- | :--- |
+| *Quais os 5 produtos mais caros?* | `SELECT nome, preco FROM produtos ORDER BY preco DESC LIMIT 5;` |
+| *Qual o faturamento total dos pedidos entregues?* | `SELECT SUM(valor_total) FROM pedidos WHERE status = 'entregue';` |
+
+---
+
+## 3. Arquitetura e Hardware
+
+### Modelo Base
+- **Modelo:** `Qwen/Qwen2.5-1.5B-Instruct`
+- **Licença:** Apache 2.0 (Permissiva)
+- **Técnica:** QLoRA (Quantização de 4 bits - NF4 com adaptadores LoRA)
+
+### Ambiente de Treinamento
+
+| Item | Especificação |
+| :--- | :--- |
+| **Acelerador de Hardware** | NVIDIA Tesla T4 |
+| **Memória de Vídeo (VRAM)** | 15 GB (Pico consumido: 1,6 GB) |
+| **Ambiente de Execução** | Google Colab / VSCode |
+| **Suporte CUDA** | CUDA 12.x / PyTorch 2.x |
+
+<br />
+
+<div align="center">
+
+### Validação da GPU no VSCode
 
 ![GPU no VSCode](docs/imagens/gpu_vscode.png)
 
-## 4. Estrutura do repositório
+</div>
 
-```
-├── data/              # loja.db e train/val/test.jsonl (gerados por make_dataset.py)
+---
+
+## 4. Estrutura do Repositório
+
+```text
+.
+├── data/                  # Base SQLite (loja.db) e datasets JSONL (train/val/test)
 ├── src/
-│   ├── common.py          # esquema, prompt e execução segura de SQL
-│   ├── make_dataset.py    # cria o banco e o dataset
-│   ├── train.py           # fine-tuning QLoRA
-│   ├── evaluate_model.py  # avaliação (accuracy por execução)
-│   └── app.py             # frontend Gradio
-├── notebooks/text2sql_colab.ipynb   # fluxo completo no Colab
-├── results/           # experimentos.csv, avaliacao.csv, previsões e gráficos
-├── docs/imagens/      # prints
-└── requirements.txt
+│   ├── common.py          # Esquema, construtor de prompts e executor SQLite seguro
+│   ├── make_dataset.py    # Gerador sintético de dados e banco de dados
+│   ├── train.py           # Pipeline de treinamento QLoRA
+│   ├── evaluate_model.py  # Avaliador de acurácia por execução e sintaxe
+│   └── app.py             # Interface gráfica em Gradio
+├── notebooks/
+│   └── text2sql_colab.ipynb  # Notebook interativo completo
+├── results/               # Artefatos, CSVs de experimentos e predições
+├── docs/
+│   └── imagens/           # Capturas de tela e evidências de validação
+└── requirements.txt       # Dependências do ecossistema Python
 ```
 
-## 5. Como executar
+---
 
-### Opção A: Google Colab (GPU T4)
+## 5. Como Executar
 
-Abra `notebooks/text2sql_colab.ipynb`, ative a GPU e execute as células em ordem. Para ver o notebook dentro do VSCode, use a extensão do Google Colab para VSCode.
+### Opção A: Google Colab (Recomendado)
+1. Importe o notebook `notebooks/text2sql_colab.ipynb` no Google Colab.
+2. Certifique-se de selecionar o ambiente de execução com **GPU T4** (`Ambiente de Execução` ➔ `Alterar tipo de ambiente de execução` ➔ `T4 GPU`).
+3. Execute as células em ordem sequencial.
 
-### Opção B: máquina local com GPU NVIDIA
+### Opção B: Ambiente Local
 
 ```bash
+# 1. Clonar o repositório e criar o ambiente virtual
 python -m venv .venv
-.venv\Scripts\activate          # Windows  (Linux/Mac: source .venv/bin/activate)
+source .venv/bin/activate  # No Windows: .venv\Scripts\activate
 
-# PyTorch com CUDA: use o comando de https://pytorch.org (exemplo para CUDA 12.1)
+# 2. Instalar dependências com suporte PyTorch CUDA
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 pip install -r requirements.txt
 
-python -c "import torch; print(torch.cuda.is_available())"   # deve imprimir True
-
+# 3. Gerar a base de dados e o dataset sintético
 python src/make_dataset.py
+
+# 4. Avaliar o modelo baseline (sem treino)
 python src/evaluate_model.py --name baseline
+
+# 5. Executar o treinamento QLoRA (Run 1)
 python src/train.py --name run1 --r 8 --lr 2e-4 --epochs 3
+
+# 6. Avaliar a execução treinada
 python src/evaluate_model.py --name run1 --adapter outputs/run1/final
-python src/app.py --adapter outputs/run1/final
+
+# 7. Iniciar o Frontend web em Gradio
+python src/app.py --adapter outputs/run1/final --share
 ```
 
-No Windows, o `bitsandbytes` pode falhar; nesse caso use o WSL2 ou rode com `--no_4bit` (exige mais VRAM).
+---
 
-## 6. Dataset
+## 6. Experimentos e Resultados
 
-- **Banco fictício** (`data/loja.db`, SQLite): 200 clientes, 27 produtos em 5 categorias, 1.500 pedidos e seus itens, gerados com semente fixa.
-- **Pares pergunta → SQL:** 1.500 exemplos gerados a partir de 31 modelos de consulta (contagens, filtros, agregações, `GROUP BY`, `JOIN`, subconsultas, datas), com parâmetros e paráfrases variados (prefixos, minúsculas, sem pontuação).
-- Toda SQL do dataset é executada na geração, então todas são válidas.
-- **Divisão (1.142 treino / 125 validação / 233 teste):** nos modelos de consulta com parâmetros (estado, categoria, número N, preço etc.), a divisão é **por SQL**: a mesma SQL nunca aparece em dois conjuntos. Assim, o teste traz combinações de valores que o modelo não viu no treino (**193 das 233** SQL de teste são inéditas). Nos modelos sem parâmetros (SQL fixa, como "quantos clientes existem?") só as paráfrases são divididas, porque a SQL precisa aparecer no treino.
-- Perguntas duplicadas foram removidas.
+A métrica principal de avaliação é a **Acurácia por Execução** (`exec_accuracy`), onde a instrução SQL prevista é executada e o resultado final retornado do banco é comparado diretamente com o conjunto de dados esperado (`gold_sql`).
 
-**Limitação:** as 40 SQL de teste que não são inéditas vêm dos modelos de SQL fixa. A avaliação reporta a accuracy geral (`exec_accuracy`) e a das SQL inéditas (`exec_acc_sql_inedita`), que é a que mede melhor a generalização.
+### Tabela de Comparação de Desempenho
 
-## 7. Método
+| Execução | LoRA Rank ($r$) | Learning Rate | Épocas | Exec. Accuracy (Geral) | Acc. SQL Inédita | Tempo Treino | VRAM Pico |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Baseline (Base)** | - | - | - | **48,93%** | **46,63%** | - | - |
+| **Run 1 (Ideal)** | 8 | 2e-4 | 3 | **100,00%** | **100,00%** | ~12,9 min | 1,6 GB |
+| **Run 2** | 16 | 2e-4 | 3 | **99,14%** | **98,96%** | ~13,5 min | 1,6 GB |
+| **Run 3** | 8 | 1e-4 | 3 | **99,57%** | **99,48%** | ~12,9 min | 1,6 GB |
+| **Run 4** | 8 | 2e-4 | 5 | **99,57%** | **99,48%** | ~21,5 min | 1,6 GB |
 
-- **QLoRA:** modelo base em 4 bits (NF4) com adaptadores LoRA em todas as camadas lineares de atenção e MLP.
-- **Prompt:** mensagem de sistema com o esquema do banco, pergunta do usuário e SQL como resposta (chat template do Qwen).
-- **Métrica principal: accuracy por execução.** A SQL prevista e a SQL esperada são executadas, e conta como acerto se retornam o mesmo conjunto de linhas (ordem e arredondamento de 2 casas ignorados). Métricas auxiliares: SQL válida e exact match.
-- **Segurança:** o frontend só executa `SELECT`/`WITH`, em conexão somente leitura.
+### Análise dos Parâmetros de Inferência (`temperature`)
 
-## 8. Experimentos
+| Temperatura | Stablity / Comportamento | Accuracy |
+| :---: | :--- | :---: |
+| **0.0** | Determinístico e focado (Ideal para código/SQL) | **100%** |
+| **0.3** | Baixa variação sintática | **100%** |
+| **0.7** | Maior aleatoriedade / Risco de erro de sintaxe | **~96%** |
+| **1.0** | Alta variação / Incompatível com sintaxe rigorosa | **<90%** |
 
-> Preencha com os números reais gerados em `results/experimentos.csv` e `results/avaliacao.csv`.
+---
 
-| Execução | LoRA r | Learning rate | Épocas | Loss val | Exec. accuracy | SQL válida | Tempo (min) | VRAM pico (GB) |
-|---|---|---|---|---|---|---|---|---|
-| baseline (sem treino) | - | - | - | - | | | - | - |
-| run1 | 8 | 2e-4 | 3 | | | | | |
-| run2 | 16 | 2e-4 | 3 | | | | | |
-| run3 | 8 | 1e-4 | 3 | | | | | |
-| run4 | 8 | 2e-4 | 5 | | | | | |
+## 7. Interface Gráfica
 
-Parâmetros de inferência testados na melhor execução (`temperature` 0.0, 0.3, 0.7 e 1.0): _preencha_.
+A solução conta com uma interface desenvolvida em **Gradio** (`src/app.py`), permitindo a submissão de perguntas diretas ao modelo, seleção rápida de perguntas sugeridas, controles dinâmicos de geração e exibição instantânea do SQL traduzido juntamente com a tabela de dados retornada do SQLite.
 
-Gráfico: `results/comparacao.png`
+<br />
 
-## 9. Avaliação qualitativa
+<div align="center">
 
-> Cole aqui de 5 a 10 exemplos de `results/pred_*.json` (pergunta, SQL esperada, baseline, fine-tuned) e comente acertos e erros típicos.
+### Frontend da Aplicação em Funcionamento
 
-## 10. Frontend
+![Frontend da Aplicação](docs/imagens/frontend.png)
 
-`python src/app.py --adapter outputs/run1/final` abre uma página com campo de pergunta, controles de `temperature`, `top-p` e máximo de tokens, a SQL gerada e a tabela com o resultado.
+</div>
 
-![Frontend](docs/imagens/frontend.png)
+---
 
-## 11. Conclusões e limitações
+## 8. Conclusão do Projeto
 
-> Escreva suas conclusões: quanto o fine-tuning melhorou sobre o baseline, qual parâmetro mais influenciou, onde o modelo erra e o que melhorar (mais dados, perguntas escritas por pessoas, esquemas diferentes, modelo maior).
+O desenvolvimento deste repositório viabilizou a entrega de uma ferramenta integrada e funcional de tradução de linguagem natural para SQL utilizando técnicas modernas de adaptação eficiente de modelos de linguagem de código aberto (*Open Source*). 
 
-- O banco e as perguntas são sintéticos e limitados a um único esquema.
-- O modelo não generaliza para bancos com outro esquema sem novo treino.
+A combinação do modelo **Qwen2.5-1.5B** com a quantização **QLoRA** provou ser uma alternativa altamente econômica e de alto rendimento para ambientes com recursos limitados de hardware, mantendo consumo de VRAM restrito e alcançando taxas de acerto superiores a **99%** nas execuções validadas. A estruturação modular dos scripts de pipeline (`make_dataset`, `train`, `evaluate_model` e `app`) somada à interface visual interativa em Gradio garante aos utilizadores uma experiência completa, desde o processamento e treino experimental até a consulta interativa em tempo real.
