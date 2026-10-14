@@ -1,10 +1,6 @@
 """
 Frontend Gradio — Text-to-SQL em português.
 
-Uso:
-    python src/app.py --adapter outputs/run1/final
-    python src/app.py --adapter outputs/run1/final --share     # link público (Colab)
-    python src/app.py --demo                                    # só a interface, sem modelo/GPU
 """
 
 import argparse

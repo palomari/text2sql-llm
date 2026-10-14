@@ -1,7 +1,5 @@
 """Avalia o modelo no conjunto de teste (accuracy por execução).
 
-Baseline (sem fine-tuning):  python src/evaluate_model.py --name baseline
-Com adaptador LoRA:          python src/evaluate_model.py --name run1 --adapter outputs/run1/final
 """
 import argparse
 import csv

@@ -1,6 +1,5 @@
 """Cria o banco SQLite fictício (loja.db) e o dataset pergunta -> SQL em português.
 
-Uso:  python src/make_dataset.py
 Saída: data/loja.db, data/train.jsonl, data/val.jsonl, data/test.jsonl
 """
 import json
